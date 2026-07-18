@@ -11,12 +11,12 @@ data class BooksResponse(
 @Serializable
 data class BookItem(
     val id: String,
-    val volumeInfo: VolumeInfo
+    val volumeInfo: VolumeInfo? = null
 )
 
 @Serializable
 data class VolumeInfo(
-    val title: String,
+    val title: String? = null,
     val authors: List<String>? = null,
     val publisher: String? = null,
     val publishedDate: String? = null,
