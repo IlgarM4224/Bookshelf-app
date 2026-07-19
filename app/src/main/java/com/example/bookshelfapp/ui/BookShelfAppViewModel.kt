@@ -17,8 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import okio.IOException
-import retrofit2.HttpException
 
 sealed interface BookshelfUiState {
     data class Success(
