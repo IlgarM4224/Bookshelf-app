@@ -17,18 +17,18 @@ enum class Genre(val displayName: String) {
 
 object GenreProvider {
    private val listOfGenres = listOf(
-        Genre.Dystopian.displayName,
-        Genre.ThrillerAndSuspense.displayName,
-        Genre.Romance.displayName,
-        Genre.Fantasy.displayName,
-        Genre.Mystery.displayName,
-        Genre.ActionAndAdventure.displayName,
-        Genre.Horror.displayName,
-        Genre.ShortStory.displayName,
-        Genre.HistoricalFiction.displayName,
-        Genre.ScienceFiction.displayName,
-        Genre.ContemporaryFiction.displayName,
-        Genre.History.displayName,
+        Genre.Dystopian,
+        Genre.ThrillerAndSuspense,
+        Genre.Romance,
+        Genre.Fantasy,
+        Genre.Mystery,
+        Genre.ActionAndAdventure,
+        Genre.Horror,
+        Genre.ShortStory,
+        Genre.HistoricalFiction,
+        Genre.ScienceFiction,
+        Genre.ContemporaryFiction,
+        Genre.History,
     )
 
     fun getGenres() = listOfGenres
