@@ -1,6 +1,5 @@
 package com.example.bookshelfapp.ui.components
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -12,22 +11,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.bookshelfapp.R
+import com.example.bookshelfapp.model.Genre
 import com.example.bookshelfapp.ui.theme.BookshelfAppTheme
 
 @Composable
 fun GenreRow(
     modifier: Modifier = Modifier,
-    genres: List<String> = emptyList(),
-    onClick: () -> Unit
+    genres: List<Genre> = emptyList(),
+    onGenreClick: (Genre) -> Unit
 ) {
     LazyRow(
         modifier = modifier,
         //contentPadding = PaddingValues(dimensionResource(R.dimen.padding_small))
     ){
-        items(genres.size){
+        items(genres.size){ genreIndex ->
             GenreRowItem(
-                title = genres[it],
-                onClick = onClick,
+                genre = genres[genreIndex],
+                onClick = { onGenreClick(genres[genreIndex]) },
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)/4)
             )
         }
@@ -36,16 +36,16 @@ fun GenreRow(
 
 @Composable
 fun GenreRowItem(
-    title: String,
-    onClick: () -> Unit,
+    genre: Genre,
+    onClick: (Genre) -> Unit,
     modifier: Modifier = Modifier
 ){
     Card(
         modifier = modifier,
-        onClick = onClick
+        onClick = { onClick(genre) }
     ) {
         Text(
-            text = title,
+            text = genre.displayName,
             modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
         )
     }
@@ -56,8 +56,11 @@ fun GenreRowItem(
 fun GenreRowPreview(){
     BookshelfAppTheme {
         GenreRow(
-            genres = listOf("fantasy", "Bio", "History", "Adventure", "Bio", "History"),
-            onClick = {},
+            genres = listOf(
+                Genre.Dystopian, Genre.Romance, Genre.ScienceFiction, Genre.Horror,
+                Genre.History, Genre.Mystery
+            ),
+            onGenreClick = {},
             modifier = Modifier.statusBarsPadding().fillMaxWidth()
         )
     }

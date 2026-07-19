@@ -12,12 +12,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.bookshelfapp.R
-import kotlin.String
+import com.example.bookshelfapp.model.Genre
 
 @Composable
 fun TopAppBar(
     modifier: Modifier = Modifier,
-    genres: List<String> = emptyList(),
+    genres: List<Genre> = emptyList(),
+    onGenreClick: (Genre) -> Unit = {}
 ){
     Column (modifier = modifier) {
         Text(
@@ -31,7 +32,7 @@ fun TopAppBar(
 
         GenreRow(
             genres = genres,
-            onClick = {}
+            onGenreClick = onGenreClick
         )
     }
 }
@@ -44,7 +45,10 @@ fun TopAppBarPreview(){
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.padding_medium)),
-            genres = listOf("fantasy", "Bio", "History", "Adventure", "Bio", "History")
+            genres = listOf(
+                Genre.Dystopian, Genre.Romance, Genre.ScienceFiction, Genre.Horror,
+                Genre.History, Genre.Mystery
+            )
         )
     }
 }
