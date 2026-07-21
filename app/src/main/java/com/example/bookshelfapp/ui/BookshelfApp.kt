@@ -25,14 +25,17 @@ fun BookShelfApp() {
                 retryAction = { viewModel.retry() },
                 errorText = stringResource(R.string.error)
             )
-        is BookshelfUiState.Loading -> LoadingScreen()
+        is BookshelfUiState.Loading -> LoadingScreen(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(dimensionResource(R.dimen.padding_small))
+        )
         is BookshelfUiState.Success -> {
             BookshelfAppContent(
                 bookshelfResponse = state.booksResponse,
                 genres = state.genres,
                 onGenreClick = viewModel::setGenre,
                 modifier = Modifier
-                    .padding(dimensionResource(R.dimen.padding_small))
                     .fillMaxSize()
             )
         }

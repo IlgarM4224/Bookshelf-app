@@ -1,14 +1,16 @@
 package com.example.bookshelfapp.ui.screens
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +38,6 @@ fun BookshelfAppContent(
                 genres = genres,
                 onGenreClick = onGenreClick,
                 modifier = Modifier
-                    .statusBarsPadding()
                     .fillMaxWidth()
                     .padding(dimensionResource(R.dimen.padding_medium))
             )
@@ -45,8 +46,9 @@ fun BookshelfAppContent(
     ) { innerPadding ->
         BookCoversGrid(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(innerPadding)
-                .fillMaxSize(),
+                .padding(horizontal = dimensionResource(R.dimen.padding_small)),
             books = bookshelfResponse.items
         )
     }
@@ -57,8 +59,12 @@ fun BookCoversGrid(
     modifier: Modifier = Modifier,
     books: List<BookItem>?
 ){
+    val imgHeight = dimensionResource(R.dimen.image_height)
+    val contentPadding = dimensionResource(R.dimen.grid_padding)
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(contentPadding),
         modifier = modifier
     ) {
         if (books?.size != null){
@@ -69,6 +75,11 @@ fun BookCoversGrid(
                         .crossfade(true)
                         .build(),
                     contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .padding(contentPadding)
+                        .fillMaxWidth()
+                        .heightIn(max = imgHeight)
                 )
             }
         }

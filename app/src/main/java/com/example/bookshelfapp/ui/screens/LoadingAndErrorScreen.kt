@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -55,29 +57,40 @@ fun ErrorScreen(
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.statusBarsPadding()
+        modifier = Modifier.fillMaxSize()
     ){
         ErrorOrLoading(
             text = errorText,
             modifier = Modifier
                 .padding(dimensionResource(R.dimen.padding_small))
-                .fillMaxSize()
-                .weight(1f)
         )
 
         Button(onClick = retryAction) {
             Text(stringResource(R.string.retry))
         }
-
-        Spacer(Modifier.weight(1f))
     }
 }
 
 @Composable
-fun LoadingScreen() = ErrorOrLoading(
-    text = stringResource(R.string.loading),
-    modifier = Modifier
-        .statusBarsPadding()
-        .padding(dimensionResource(R.dimen.padding_small))
-        .fillMaxSize()
-)
+fun LoadingScreen( modifier: Modifier ) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        ErrorOrLoading(
+            text = stringResource(R.string.loading),
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(dimensionResource(R.dimen.padding_small))
+        )
+
+        CircularProgressIndicator(
+            modifier = Modifier
+                .width(dimensionResource(R.dimen.progress_width))
+                .padding(dimensionResource(R.dimen.padding_small)),
+            color = MaterialTheme.colorScheme.secondary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
+    }
+}
