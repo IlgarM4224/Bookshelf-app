@@ -8,4 +8,7 @@
 
     <dimen name="grid_padding">2dp</dimen>
     <dimen name="progress_width">64dp</dimen>
+
+    <dimen name="description_image_height">210dp</dimen>
+    <dimen name="description_image_width">140dp</dimen>
 </resources>

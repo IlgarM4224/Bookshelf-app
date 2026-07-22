@@ -1,5 +1,6 @@
 package com.example.bookshelfapp.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +31,7 @@ fun BookshelfAppContent(
     modifier: Modifier = Modifier,
     genres: List<Genre> = emptyList(),
     onGenreClick: (Genre) -> Unit = {},
+    onBookClick: (Int) -> Unit = {},
     bookshelfResponse: BooksResponse = BooksResponse()
 ) {
     Scaffold(
@@ -49,7 +51,8 @@ fun BookshelfAppContent(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = dimensionResource(R.dimen.padding_small)),
-            books = bookshelfResponse.items
+            books = bookshelfResponse.items,
+            selectBookIndex = onBookClick
         )
     }
 }
@@ -57,6 +60,7 @@ fun BookshelfAppContent(
 @Composable
 fun BookCoversGrid(
     modifier: Modifier = Modifier,
+    selectBookIndex: (Int) -> Unit = {},
     books: List<BookItem>?
 ){
     val imgHeight = dimensionResource(R.dimen.image_height)
@@ -80,6 +84,7 @@ fun BookCoversGrid(
                         .padding(contentPadding)
                         .fillMaxWidth()
                         .heightIn(max = imgHeight)
+                        .clickable(onClick = { selectBookIndex(it) })
                 )
             }
         }
@@ -90,6 +95,6 @@ fun BookCoversGrid(
 @Composable
 fun BookshelfAppContentPreview(){
     BookshelfAppTheme {
-        BookshelfAppContent(modifier = Modifier.fillMaxSize() )
+        BookshelfAppContent(modifier = Modifier.fillMaxSize())
     }
 }

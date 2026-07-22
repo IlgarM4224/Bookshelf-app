@@ -16,7 +16,7 @@ import kotlin.time.Duration.Companion.milliseconds
 const val apiKey = BuildConfig.BOOKS_API_KEY
 interface BookshelfRepository {
     suspend fun getBooksByGenre(genre: Genre): BooksResponse
-    fun getBooksByGenreFlow(genre: Genre, maxRetries: Int = 3): Flow<BooksResponse>
+    fun getBooksByGenreFlow(genre: Genre, maxRetries: Int = 5): Flow<BooksResponse>
 }
 
 class NetworkBookshelfRepository (private val retrofitService: BookshelfApiService): BookshelfRepository {
@@ -37,7 +37,7 @@ class NetworkBookshelfRepository (private val retrofitService: BookshelfApiServi
             val shouldRetry = attempt < maxRetries && (isNetworkError || isServerError503)
 
             if (shouldRetry) {
-                val delayTime = (1 shl attempt.toInt()) * 1000L
+                val delayTime = (1 shl attempt.toInt()) * 100L
 
                 Log.w(
                     "NetworkRepository",

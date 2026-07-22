@@ -16,13 +16,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 sealed interface BookshelfUiState {
     data class Success(
-        val booksResponse: BooksResponse,
-        val genres: List<Genre>,
-        val selectedGenre: Genre
+            val booksResponse: BooksResponse,
+            val genres: List<Genre>,
+            val selectedGenre: Genre,
+            val infoScreen: Boolean,
+            val selectedBookIndex: Int = 0
         ) : BookshelfUiState
     object Error : BookshelfUiState
     object Loading : BookshelfUiState
@@ -52,7 +55,8 @@ class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepositor
                     _uiState.value = BookshelfUiState.Success(
                         booksResponse = response,
                         genres = GenreProvider.getGenres(),
-                        selectedGenre = selectedGenre
+                        selectedGenre = selectedGenre,
+                        infoScreen = false
                     )
                 }
         }
@@ -65,6 +69,32 @@ class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepositor
     fun setGenre (selected: Genre) {
         currentGenre = selected
         getBookshelf(selected)
+    }
+
+    fun showInfo(index: Int) {
+        _uiState.update { currentState ->
+            if (currentState is BookshelfUiState.Success) {
+                currentState.copy(
+                    infoScreen = true,
+                    selectedBookIndex = index
+                )
+            } else{
+                currentState
+            }
+        }
+    }
+
+    fun onBackPase() {
+        _uiState.update { currentState ->
+            if (currentState is BookshelfUiState.Success) {
+                currentState.copy(
+                    infoScreen = false,
+                    selectedBookIndex = 0
+                )
+            } else{
+                currentState
+            }
+        }
     }
 
     companion object {

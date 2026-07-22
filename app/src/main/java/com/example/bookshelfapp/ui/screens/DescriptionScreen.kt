@@ -15,10 +15,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,7 +50,8 @@ import com.example.bookshelfapp.ui.theme.BookshelfAppTheme
 @Composable
 fun BookInfo (
     modifier: Modifier = Modifier,
-    volumeInfo: VolumeInfo
+    volumeInfo: VolumeInfo?,
+    onBackClick: () -> Unit,
 ) {
     val smallPadding = dimensionResource(R.dimen.padding_small)
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
@@ -58,8 +63,16 @@ fun BookInfo (
                 .verticalScroll(rememberScrollState())
                 .padding(mediumPadding)
         ){
+            IconButton(
+                onClick = onBackClick,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBackIosNew,
+                    contentDescription = null
+                )
+            }
             BooksImage(
-                imageLink = volumeInfo.imageLinks?.secureThumbnail,
+                imageLink = volumeInfo?.imageLinks?.secureThumbnail,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = smallPadding)
@@ -68,14 +81,14 @@ fun BookInfo (
             Spacer(modifier = Modifier.height(mediumPadding))
 
             Text(
-                text = volumeInfo.title ?: stringResource(R.string.if_null),
+                text = volumeInfo?.title ?: stringResource(R.string.if_null),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            if (!volumeInfo.authors.isNullOrEmpty()) {
+            if (!volumeInfo?.authors.isNullOrEmpty()) {
                 Spacer(modifier = Modifier.height(smallPadding/2))
                 Text(
                     text = volumeInfo.authors.joinToString(),
@@ -98,7 +111,7 @@ fun BookInfo (
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun BookBadges(volumeInfo: VolumeInfo) {
+fun BookBadges(volumeInfo: VolumeInfo?) {
     val smallPadding = dimensionResource(R.dimen.padding_small)
 
     FlowRow(
@@ -106,19 +119,19 @@ fun BookBadges(volumeInfo: VolumeInfo) {
         verticalArrangement = Arrangement.spacedBy(smallPadding),
         modifier = Modifier.fillMaxWidth()
     ) {
-        volumeInfo.pageCount?.let {
+        volumeInfo?.pageCount?.let {
             AssistChip(
                 onClick = {},
                 label = { Text("$it pages") }
             )
         }
-        volumeInfo.language?.let {
+        volumeInfo?.language?.let {
             AssistChip(
                 onClick = {},
                 label = { Text("Language: ${it.uppercase()}") }
             )
         }
-        volumeInfo.categories?.forEach { category ->
+        volumeInfo?.categories?.forEach { category ->
             AssistChip(
                 onClick = {},
                 label = { Text(category) }
@@ -129,7 +142,7 @@ fun BookBadges(volumeInfo: VolumeInfo) {
 
 @Composable
 fun DescriptionCard(
-    volumeInfo: VolumeInfo,
+    volumeInfo: VolumeInfo?,
     modifier: Modifier = Modifier
 ) {
     val smallPadding = dimensionResource(R.dimen.padding_small)
@@ -147,7 +160,7 @@ fun DescriptionCard(
             modifier = Modifier.padding(mediumPadding),
             verticalArrangement = Arrangement.spacedBy(smallPadding)
         ) {
-            if (volumeInfo.publisher != null || volumeInfo.publishedDate != null) {
+            if (volumeInfo?.publisher != null || volumeInfo?.publishedDate != null) {
                 InfoRow(label = "Publisher", value = volumeInfo.publisher ?: nullString)
                 InfoRow(label = "Published date", value = volumeInfo.publishedDate ?: nullString)
 
@@ -165,7 +178,7 @@ fun DescriptionCard(
             )
 
             Text(
-                text = volumeInfo.description ?: nullString,
+                text = volumeInfo?.description ?: nullString,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.25f
@@ -226,7 +239,7 @@ fun BooksImage(
 fun BookInfoPreview(){
     BookshelfAppTheme{
         Surface {
-            BookInfo(volumeInfo = test)
+            BookInfo(volumeInfo = test, onBackClick = {})
         }
     }
 }
@@ -236,7 +249,7 @@ fun BookInfoPreview(){
 fun BookInfoDarkPreview(){
     BookshelfAppTheme(darkTheme = true) {
         Surface {
-            BookInfo(volumeInfo = test)
+            BookInfo(volumeInfo = test, onBackClick = {})
         }
     }
 }
