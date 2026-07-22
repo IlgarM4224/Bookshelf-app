@@ -1,7 +1,11 @@
 package com.example.bookshelfapp.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,20 +13,29 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -54,94 +67,129 @@ fun BookInfo (
 
             Spacer(modifier = Modifier.height(mediumPadding))
 
-            Description(
-                title = volumeInfo.title,
-                authors = volumeInfo.authors,
-                publisher = volumeInfo.publisher,
-                publishedDate = volumeInfo.publishedDate,
-                pageCount = volumeInfo.pageCount,
-                categories = volumeInfo.categories,
-                language = volumeInfo.language,
-                description = volumeInfo.description,
-                modifier = Modifier.padding(smallPadding)
+            Text(
+                text = volumeInfo.title ?: stringResource(R.string.if_null),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            if (!volumeInfo.authors.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(smallPadding/2))
+                Text(
+                    text = volumeInfo.authors.joinToString(),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Spacer(modifier = Modifier.height(mediumPadding))
+
+            BookBadges(volumeInfo = volumeInfo)
+
+            Spacer(modifier = Modifier.height(mediumPadding))
+
+            DescriptionCard(volumeInfo = volumeInfo)
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun BookBadges(volumeInfo: VolumeInfo) {
+    val smallPadding = dimensionResource(R.dimen.padding_small)
+
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(smallPadding, Alignment.CenterHorizontally),
+        verticalArrangement = Arrangement.spacedBy(smallPadding),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        volumeInfo.pageCount?.let {
+            AssistChip(
+                onClick = {},
+                label = { Text("$it pages") }
+            )
+        }
+        volumeInfo.language?.let {
+            AssistChip(
+                onClick = {},
+                label = { Text("Language: ${it.uppercase()}") }
+            )
+        }
+        volumeInfo.categories?.forEach { category ->
+            AssistChip(
+                onClick = {},
+                label = { Text(category) }
             )
         }
     }
 }
 
 @Composable
-fun Description(
-    modifier: Modifier = Modifier,
-    title: String?,
-    authors: List<String>?,
-    publisher: String?,
-    publishedDate: String?,
-    pageCount: Int?,
-    categories: List<String>?,
-    language: String?,
-    description: String?
-
+fun DescriptionCard(
+    volumeInfo: VolumeInfo,
+    modifier: Modifier = Modifier
 ) {
-    val mediumPadding = dimensionResource(R.dimen.padding_small)
-    val smallPadding = dimensionResource(R.dimen.padding_small)/2
+    val smallPadding = dimensionResource(R.dimen.padding_small)
+    val mediumPadding = dimensionResource(R.dimen.padding_medium)
     val nullString = stringResource(R.string.if_null)
 
-    Card{
-        Column(modifier = modifier) {
+    Card (
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        ),
+        shape = RoundedCornerShape(mediumPadding)
+    ) {
+        Column(
+            modifier = Modifier.padding(mediumPadding),
+            verticalArrangement = Arrangement.spacedBy(smallPadding)
+        ) {
+            if (volumeInfo.publisher != null || volumeInfo.publishedDate != null) {
+                InfoRow(label = "Publisher", value = volumeInfo.publisher ?: nullString)
+                InfoRow(label = "Published date", value = volumeInfo.publishedDate ?: nullString)
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = smallPadding/2),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+            }
+
             Text(
-                text = "Title: ${title ?: nullString}",
-                style = MaterialTheme.typography.headlineSmall,
+                text = "Description",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
             )
 
-            Spacer(Modifier.padding(mediumPadding))
-
             Text(
-                text = "Authors: ${authors?.joinToString() ?: nullString}",
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-            Spacer(Modifier.padding(smallPadding))
-
-            Text(
-                text = "Publisher: ${publisher ?: nullString}",
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-            Spacer(Modifier.padding(smallPadding))
-
-            Text(
-                text = "Publisher date: ${publishedDate ?: nullString}",
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-            Spacer(Modifier.padding(smallPadding))
-
-            Text(
-                text = "Page count: ${pageCount ?: nullString}",
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-            Spacer(Modifier.padding(smallPadding))
-
-            Text(
-                text = "Categories: ${categories?.joinToString() ?: nullString}",
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-            Spacer(Modifier.padding(smallPadding))
-
-            Text(
-                text = "Language: ${language ?: nullString}",
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-            Spacer(Modifier.padding(smallPadding))
-
-            Text(
-                text = "Description: ${description ?: nullString}",
-                style = MaterialTheme.typography.bodyLarge
+                text = volumeInfo.description ?: nullString,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.25f
             )
         }
+    }
+}
+
+@Composable
+fun InfoRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 @Composable
@@ -167,6 +215,8 @@ fun BooksImage(
                     width = dimensionResource(R.dimen.description_image_width),
                     height = dimensionResource(R.dimen.description_image_height)
                 )
+                .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(12.dp))
         )
     }
 }
