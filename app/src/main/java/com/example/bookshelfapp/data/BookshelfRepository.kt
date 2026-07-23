@@ -22,7 +22,7 @@ interface BookshelfRepository {
 class NetworkBookshelfRepository (private val retrofitService: BookshelfApiService): BookshelfRepository {
     override suspend fun getBooksByGenre(genre: Genre): BooksResponse =
         retrofitService.getBooksByGenre(
-            query = genre.name,
+            query = "subject:${genre.displayName}",
             apiKey = apiKey,
             maxResults = 20
         )

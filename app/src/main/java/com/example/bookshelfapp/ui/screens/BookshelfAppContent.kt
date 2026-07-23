@@ -1,11 +1,13 @@
 package com.example.bookshelfapp.ui.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Scaffold
@@ -14,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -21,7 +24,6 @@ import coil3.request.crossfade
 import com.example.bookshelfapp.R
 import com.example.bookshelfapp.model.BookItem
 import com.example.bookshelfapp.model.BooksResponse
-import com.example.bookshelfapp.model.Genre
 import com.example.bookshelfapp.ui.components.TopAppBar
 import com.example.bookshelfapp.ui.theme.BookshelfAppTheme
 
@@ -29,19 +31,18 @@ import com.example.bookshelfapp.ui.theme.BookshelfAppTheme
 @Composable
 fun BookshelfAppContent(
     modifier: Modifier = Modifier,
-    genres: List<Genre> = emptyList(),
-    onGenreClick: (Genre) -> Unit = {},
     onBookClick: (Int) -> Unit = {},
+    onBackClick: () -> Unit = {},
     bookshelfResponse: BooksResponse = BooksResponse()
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                genres = genres,
-                onGenreClick = onGenreClick,
                 modifier = Modifier
+                    .statusBarsPadding()
                     .fillMaxWidth()
-                    .padding(dimensionResource(R.dimen.padding_medium))
+                    .padding(dimensionResource(R.dimen.padding_medium)),
+                onBackClick = onBackClick
             )
         },
         modifier = modifier
@@ -63,12 +64,13 @@ fun BookCoversGrid(
     selectBookIndex: (Int) -> Unit = {},
     books: List<BookItem>?
 ){
-    val imgHeight = dimensionResource(R.dimen.image_height)
-    val contentPadding = dimensionResource(R.dimen.grid_padding)
+    val spacing = dimensionResource(R.dimen.grid_padding)
 
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(contentPadding),
+        columns = GridCells.Adaptive(dimensionResource(R.dimen.vertical_grid_min_size)),
+        contentPadding = PaddingValues(spacing),
+        horizontalArrangement = Arrangement.spacedBy(spacing),
+        verticalArrangement = Arrangement.spacedBy(spacing),
         modifier = modifier
     ) {
         if (books?.size != null){
@@ -80,11 +82,13 @@ fun BookCoversGrid(
                         .build(),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
+                    fallback = painterResource(R.drawable.not_found),
+                    placeholder = painterResource(R.drawable.loading),
                     modifier = Modifier
-                        .padding(contentPadding)
                         .fillMaxWidth()
-                        .heightIn(max = imgHeight)
+                        .aspectRatio(2f / 3f)
                         .clickable(onClick = { selectBookIndex(it) })
+
                 )
             }
         }

@@ -21,26 +21,22 @@ import kotlinx.coroutines.launch
 
 sealed interface BookshelfUiState {
     data class Success(
-            val booksResponse: BooksResponse,
-            val genres: List<Genre>,
-            val selectedGenre: Genre,
-            val infoScreen: Boolean,
-            val selectedBookIndex: Int = 0
+        val booksResponse: BooksResponse? = null,
+        val genres: List<Genre> = emptyList(),
+        val selectedGenre: Genre? = null,
+        val currentScreen: CurrentScreen = CurrentScreen.Genre,
+        val selectedBookIndex: Int = 0
         ) : BookshelfUiState
     object Error : BookshelfUiState
     object Loading : BookshelfUiState
 }
 
 class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepository): ViewModel(){
-    private val _uiState = MutableStateFlow<BookshelfUiState>(BookshelfUiState.Loading)
+    private val _uiState = MutableStateFlow<BookshelfUiState>(BookshelfUiState.Success())
 
     val uiState: StateFlow<BookshelfUiState> = _uiState.asStateFlow()
 
-    private var currentGenre: Genre = Genre.Dystopian
-
-    init {
-        getBookshelf(currentGenre)
-    }
+    private var currentGenre: Genre? = null
 
     private fun getBookshelf(selectedGenre: Genre ){
         viewModelScope.launch {
@@ -56,14 +52,14 @@ class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepositor
                         booksResponse = response,
                         genres = GenreProvider.getGenres(),
                         selectedGenre = selectedGenre,
-                        infoScreen = false
+                        currentScreen = CurrentScreen.Books
                     )
                 }
         }
     }
 
     fun retry(){
-        getBookshelf(currentGenre)
+        currentGenre?.let { getBookshelf(it) }
     }
 
     fun setGenre (selected: Genre) {
@@ -75,7 +71,7 @@ class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepositor
         _uiState.update { currentState ->
             if (currentState is BookshelfUiState.Success) {
                 currentState.copy(
-                    infoScreen = true,
+                    currentScreen = CurrentScreen.Info,
                     selectedBookIndex = index
                 )
             } else{
@@ -84,12 +80,25 @@ class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepositor
         }
     }
 
-    fun onBackPase() {
+    fun back(currentScreen: CurrentScreen) {
+        if (currentScreen == CurrentScreen.Books) backToGenreScreen()
+        else backToBooksScreen()
+    }
+
+    fun backToBooksScreen() {
+        backToScreen(CurrentScreen.Books)
+    }
+
+    fun backToGenreScreen() {
+        backToScreen(CurrentScreen.Genre)
+    }
+
+
+    private fun backToScreen(screen: CurrentScreen) {
         _uiState.update { currentState ->
             if (currentState is BookshelfUiState.Success) {
                 currentState.copy(
-                    infoScreen = false,
-                    selectedBookIndex = 0
+                    currentScreen = screen
                 )
             } else{
                 currentState
@@ -106,4 +115,8 @@ class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepositor
             }
         }
     }
+}
+
+enum class CurrentScreen {
+    Info, Books, Genre
 }

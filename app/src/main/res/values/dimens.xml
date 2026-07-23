@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="padding_mini">4dp</dimen>
     <dimen name="padding_small">8dp</dimen>
     <dimen name="padding_medium">16dp</dimen>
 
@@ -11,4 +12,7 @@
 
     <dimen name="description_image_height">210dp</dimen>
     <dimen name="description_image_width">140dp</dimen>
+
+    <dimen name="vertical_grid_min_size">180dp</dimen>
+    <dimen name="genre_icon_size">110dp</dimen>
 </resources>
