@@ -12,6 +12,7 @@ import com.example.bookshelfapp.data.BookshelfRepository
 import com.example.bookshelfapp.model.BooksResponse
 import com.example.bookshelfapp.model.Genre
 import com.example.bookshelfapp.model.GenreProvider
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -83,6 +84,10 @@ class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepositor
     }
 
     fun updateScreen(currentScreen: CurrentScreen){
+        if (currentScreen == CurrentScreen.Loading) {
+            viewModelScope.coroutineContext.cancelChildren()
+        }
+
         val moveTo = when (currentScreen) {
             CurrentScreen.Info -> CurrentScreen.Books
             CurrentScreen.Books -> CurrentScreen.Genre
@@ -90,12 +95,12 @@ class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepositor
         }
 
         _uiState.update { currentState ->
-            if (currentState is BookshelfUiState.Success) {
-                currentState.copy(
+            when (currentState) {
+                is BookshelfUiState.Success -> currentState.copy(currentScreen = moveTo)
+                else -> BookshelfUiState.Success(
+                    genres = GenreProvider.getGenres(),
                     currentScreen = moveTo
                 )
-            } else {
-                currentState
             }
         }
     }

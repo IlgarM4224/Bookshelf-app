@@ -85,7 +85,7 @@ fun BookshelfAppContent(
                     is BookshelfUiState.Error -> {
 
                         BackHandler {
-                            onBackPressed(CurrentScreen.Error)
+                            onBackPressed(CurrentScreen.Genre)
                         }
 
                         ErrorScreen(

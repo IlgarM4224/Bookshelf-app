@@ -38,8 +38,7 @@ fun TopAppBar(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-
-        if(currentScreen != CurrentScreen.Genre && currentScreen != CurrentScreen.Loading) {
+        if(currentScreen != CurrentScreen.Genre) {
             IconButton( onClick = { onBackClick(currentScreen) } ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBackIosNew,
