@@ -4,4 +4,5 @@
     <string name="loading">Loading</string>
     <string name="error">Error</string>
     <string name="if_null">No information</string>
+    <string name="loading_top_bar">Please wait</string>
 </resources>

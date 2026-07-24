@@ -1,5 +1,6 @@
 package com.example.bookshelfapp.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,23 +27,27 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.bookshelfapp.R
 import com.example.bookshelfapp.model.BookItem
-import com.example.bookshelfapp.model.BooksResponse
 import com.example.bookshelfapp.model.Genre
+import com.example.bookshelfapp.ui.BookshelfUiState
 import com.example.bookshelfapp.ui.CurrentScreen
 import com.example.bookshelfapp.ui.components.TopAppBar
-
 
 @Composable
 fun BookshelfAppContent(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    onGenreClick: (Genre) -> Unit,
-    onBookClick: (Int) -> Unit,
-    onBackClick: () -> Unit,
-    selectedIndex: Int,
-    canNavigateBack: Boolean = true,
-    bookshelfResponse: BooksResponse = BooksResponse()
+    retryAction: () -> Unit,
+    selectGenre: (Genre) -> Unit,
+    selectBookIndex: (Int) -> Unit,
+    onBackPressed: (CurrentScreen) -> Unit,
+    currentUiState: BookshelfUiState
 ) {
+    val currentScreenForTopAppBar = when (currentUiState) {
+        is BookshelfUiState.Error -> CurrentScreen.Error
+        is BookshelfUiState.Loading -> CurrentScreen.Loading
+        is BookshelfUiState.Success -> currentUiState.currentScreen
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -52,8 +58,9 @@ fun BookshelfAppContent(
                         vertical  = dimensionResource(R.dimen.padding_small),
                         horizontal = dimensionResource(R.dimen.padding_small)
                     ),
-                onBackClick = onBackClick,
-                canNavigateBack = canNavigateBack
+                onBackClick = onBackPressed,
+                currentScreen = currentScreenForTopAppBar,
+                selectedGenre = if (currentUiState is BookshelfUiState.Success ) currentUiState.selectedGenre else null
             )
         },
         modifier = modifier
@@ -67,30 +74,67 @@ fun BookshelfAppContent(
             composable(route = CurrentScreen.Genre.name) {
                 GenreScreen(
                     onClick = {
-                        onGenreClick(it)
+                        selectGenre(it)
                         navController.navigate(CurrentScreen.Books.name)
                     }
                 )
             }
 
             composable(route = CurrentScreen.Books.name) {
-                BookCoversGrid(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = dimensionResource(R.dimen.padding_small)),
-                    books = bookshelfResponse.items,
-                    selectBookIndex = {
-                        onBookClick(it)
-                        navController.navigate(CurrentScreen.Info.name)
+                when (currentUiState) {
+                    is BookshelfUiState.Error -> {
+
+                        BackHandler {
+                            onBackPressed(CurrentScreen.Error)
+                        }
+
+                        ErrorScreen(
+                            retryAction = retryAction,
+                            errorText = stringResource(R.string.error)
+                        )
                     }
-                )
+
+                    is BookshelfUiState.Success -> {
+                        BackHandler {
+                            onBackPressed(CurrentScreen.Books)
+                        }
+
+                        BookCoversGrid(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = dimensionResource(R.dimen.padding_small)),
+                            books = currentUiState.booksResponse?.items,
+                            selectBookIndex = {
+                                selectBookIndex(it)
+                                navController.navigate(CurrentScreen.Info.name)
+                            }
+                        )
+                    }
+
+                    else -> {
+                        BackHandler {
+                            onBackPressed(CurrentScreen.Loading)
+                        }
+
+                        LoadingScreen(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(dimensionResource(R.dimen.padding_small))
+                        )
+                    }
+                }
             }
 
             composable(route = CurrentScreen.Info.name) {
-                BookInfo(
-                    modifier = Modifier.statusBarsPadding(),
-                    volumeInfo = bookshelfResponse.items?.getOrNull(selectedIndex)?.volumeInfo,
-                )
+                if (currentUiState is BookshelfUiState.Success) {
+                    BackHandler {
+                        onBackPressed(CurrentScreen.Info)
+                    }
+                    BookInfo(
+                        modifier = Modifier.statusBarsPadding(),
+                        volumeInfo = currentUiState.booksResponse?.items?.getOrNull(currentUiState.selectedBookIndex)?.volumeInfo ,
+                    )
+                }
             }
         }
     }

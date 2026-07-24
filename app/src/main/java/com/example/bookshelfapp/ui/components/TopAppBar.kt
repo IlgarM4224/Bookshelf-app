@@ -17,21 +17,30 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.bookshelfapp.R
+import com.example.bookshelfapp.model.Genre
+import com.example.bookshelfapp.ui.CurrentScreen
 
 @Composable
 fun TopAppBar(
     modifier: Modifier = Modifier,
-    label: String = stringResource(R.string.app_name),
-    onBackClick: () -> Unit = {},
-    canNavigateBack: Boolean = true
+    currentScreen: CurrentScreen = CurrentScreen.Genre,
+    selectedGenre: Genre? = null,
+    onBackClick: (CurrentScreen) -> Unit = {},
 ){
+    val label = when (currentScreen) {
+        CurrentScreen.Books -> selectedGenre?.displayName ?: stringResource(R.string.app_name)
+        CurrentScreen.Info -> CurrentScreen.Info.name
+        CurrentScreen.Loading -> stringResource(R.string.loading_top_bar)
+        CurrentScreen.Error -> stringResource(R.string.if_null)
+        else -> stringResource(R.string.app_name)
+    }
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        if(canNavigateBack) {
-            IconButton( onClick = onBackClick ) {
+        if(currentScreen != CurrentScreen.Genre && currentScreen != CurrentScreen.Loading) {
+            IconButton( onClick = { onBackClick(currentScreen) } ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBackIosNew,
                     contentDescription = null,
@@ -57,7 +66,8 @@ fun TopAppBarPreview(){
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.padding_medium)),
-            canNavigateBack = true
+            currentScreen = CurrentScreen.Books,
+            selectedGenre = Genre.Horror
         )
     }
 }

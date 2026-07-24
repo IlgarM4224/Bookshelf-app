@@ -82,8 +82,22 @@ class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepositor
         }
     }
 
-    fun onError(){
+    fun updateScreen(currentScreen: CurrentScreen){
+        val moveTo = when (currentScreen) {
+            CurrentScreen.Info -> CurrentScreen.Books
+            CurrentScreen.Books -> CurrentScreen.Genre
+            else -> CurrentScreen.Genre
+        }
 
+        _uiState.update { currentState ->
+            if (currentState is BookshelfUiState.Success) {
+                currentState.copy(
+                    currentScreen = moveTo
+                )
+            } else {
+                currentState
+            }
+        }
     }
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
@@ -97,5 +111,5 @@ class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepositor
 }
 
 enum class CurrentScreen {
-    Info, Books, Genre
+    Info, Books, Genre, Error, Loading
 }
