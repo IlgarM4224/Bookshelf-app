@@ -3,7 +3,6 @@ package com.example.bookshelfapp.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -11,12 +10,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.bookshelfapp.R
 import com.example.bookshelfapp.model.BooksResponse
-import com.example.bookshelfapp.ui.screens.BookInfo
 import com.example.bookshelfapp.ui.screens.BookshelfAppContent
 import com.example.bookshelfapp.ui.screens.ErrorScreen
-import com.example.bookshelfapp.ui.screens.GenreScreen
 import com.example.bookshelfapp.ui.screens.LoadingScreen
 
 @Composable
@@ -24,11 +23,11 @@ fun BookShelfApp() {
     val viewModel:  BookShelfAppViewModel = viewModel(factory = BookShelfAppViewModel.Factory)
     val currentUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val navController = rememberNavController()
+
+
     when(val state = currentUiState){
         is BookshelfUiState.Error -> {
-            BackHandler {
-                viewModel.backToGenreScreen()
-            }
             ErrorScreen(
                 retryAction = { viewModel.retry() },
                 errorText = stringResource(R.string.error)
@@ -42,30 +41,18 @@ fun BookShelfApp() {
         )
 
         is BookshelfUiState.Success -> {
-
-            BackHandler(enabled = state.currentScreen != CurrentScreen.Genre) {
-                viewModel.back(state.currentScreen)
-            }
-
-            when(state.currentScreen) {
-                CurrentScreen.Genre ->
-                    GenreScreen(
-                        onClick = viewModel::setGenre
-                    )
-                CurrentScreen.Info ->
-                    BookInfo(
-                        modifier = Modifier.statusBarsPadding(),
-                        volumeInfo = state.booksResponse?.items?.getOrNull(state.selectedBookIndex)?.volumeInfo,
-                        onBackClick = { viewModel.backToBooksScreen() }
-                    )
-                else ->
-                    BookshelfAppContent(
-                        bookshelfResponse = state.booksResponse ?: BooksResponse(),
-                        onBookClick = viewModel::showInfo,
-                        onBackClick = viewModel::backToGenreScreen,
-                        modifier = Modifier.fillMaxSize()
-                    )
-            }
+            BookshelfAppContent(
+                bookshelfResponse = state.booksResponse ?: BooksResponse(),
+                navController = navController,
+                onGenreClick = viewModel::setGenre,
+                onBookClick = viewModel::showInfo,
+                selectedIndex = state.selectedBookIndex,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                canNavigateBack = true,
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }

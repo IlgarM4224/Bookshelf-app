@@ -15,14 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -51,7 +47,6 @@ import com.example.bookshelfapp.ui.theme.BookshelfAppTheme
 fun BookInfo (
     modifier: Modifier = Modifier,
     volumeInfo: VolumeInfo?,
-    onBackClick: () -> Unit,
 ) {
     val smallPadding = dimensionResource(R.dimen.padding_small)
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
@@ -63,14 +58,6 @@ fun BookInfo (
                 .verticalScroll(rememberScrollState())
                 .padding(mediumPadding)
         ){
-            IconButton(
-                onClick = onBackClick,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBackIosNew,
-                    contentDescription = null
-                )
-            }
             BooksImage(
                 imageLink = volumeInfo?.imageLinks?.secureThumbnail,
                 modifier = Modifier
@@ -239,7 +226,7 @@ fun BooksImage(
 fun BookInfoPreview(){
     BookshelfAppTheme{
         Surface {
-            BookInfo(volumeInfo = test, onBackClick = {})
+            BookInfo(volumeInfo = test)
         }
     }
 }
@@ -249,7 +236,7 @@ fun BookInfoPreview(){
 fun BookInfoDarkPreview(){
     BookshelfAppTheme(darkTheme = true) {
         Surface {
-            BookInfo(volumeInfo = test, onBackClick = {})
+            BookInfo(volumeInfo = test)
         }
     }
 }

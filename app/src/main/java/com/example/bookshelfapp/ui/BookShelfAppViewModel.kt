@@ -25,7 +25,8 @@ sealed interface BookshelfUiState {
         val genres: List<Genre> = emptyList(),
         val selectedGenre: Genre? = null,
         val currentScreen: CurrentScreen = CurrentScreen.Genre,
-        val selectedBookIndex: Int = 0
+        val selectedBookIndex: Int = 0,
+        val canNavigateBack: Boolean = false
         ) : BookshelfUiState
     object Error : BookshelfUiState
     object Loading : BookshelfUiState
@@ -52,7 +53,8 @@ class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepositor
                         booksResponse = response,
                         genres = GenreProvider.getGenres(),
                         selectedGenre = selectedGenre,
-                        currentScreen = CurrentScreen.Books
+                        currentScreen = CurrentScreen.Books,
+                        canNavigateBack = true
                     )
                 }
         }
@@ -80,32 +82,9 @@ class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepositor
         }
     }
 
-    fun back(currentScreen: CurrentScreen) {
-        if (currentScreen == CurrentScreen.Books) backToGenreScreen()
-        else backToBooksScreen()
+    fun onError(){
+
     }
-
-    fun backToBooksScreen() {
-        backToScreen(CurrentScreen.Books)
-    }
-
-    fun backToGenreScreen() {
-        backToScreen(CurrentScreen.Genre)
-    }
-
-
-    private fun backToScreen(screen: CurrentScreen) {
-        _uiState.update { currentState ->
-            if (currentState is BookshelfUiState.Success) {
-                currentState.copy(
-                    currentScreen = screen
-                )
-            } else{
-                currentState
-            }
-        }
-    }
-
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {

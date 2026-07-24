@@ -3,7 +3,6 @@ package com.example.bookshelfapp.ui.components
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Icon
@@ -22,6 +21,7 @@ import com.example.bookshelfapp.R
 @Composable
 fun TopAppBar(
     modifier: Modifier = Modifier,
+    label: String = stringResource(R.string.app_name),
     onBackClick: () -> Unit = {},
     canNavigateBack: Boolean = true
 ){
@@ -41,7 +41,7 @@ fun TopAppBar(
         }
 
         Text(
-            text = stringResource(R.string.app_name),
+            text = label,
             style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))

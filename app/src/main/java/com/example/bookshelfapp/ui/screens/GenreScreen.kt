@@ -6,13 +6,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import com.example.bookshelfapp.R
 import com.example.bookshelfapp.model.Genre
 import com.example.bookshelfapp.model.GenreProvider
-import com.example.bookshelfapp.ui.components.TopAppBar
 import com.example.bookshelfapp.ui.theme.BookshelfAppTheme
 
 @Composable
@@ -35,29 +32,17 @@ fun GenreScreen(
     genres: List<Genre> = GenreProvider.getGenres(),
     onClick: (Genre) -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                modifier = Modifier
-                    .statusBarsPadding()
-                    .fillMaxWidth()
-                    .padding(dimensionResource(R.dimen.padding_medium)),
-                canNavigateBack = false
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = dimensionResource(R.dimen.vertical_grid_min_size)),
+        modifier = modifier,
+    ) {
+        items(genres.size){
+            GenreCard(
+                title = genres[it].displayName,
+                imageRes = genres[it].iconId,
+                onClick = { onClick(genres[it]) },
+                modifier = Modifier.padding(2.dp)
             )
-        }
-    ) { innerPadding ->
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = dimensionResource(R.dimen.vertical_grid_min_size)),
-            modifier = modifier.padding(innerPadding),
-        ) {
-            items(genres.size){
-                GenreCard(
-                    title = genres[it].displayName,
-                    imageRes = genres[it].iconId,
-                    onClick = { onClick(genres[it]) },
-                    modifier = Modifier.padding(2.dp)
-                )
-            }
         }
     }
 }

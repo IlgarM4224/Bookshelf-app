@@ -17,22 +17,29 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.bookshelfapp.R
 import com.example.bookshelfapp.model.BookItem
 import com.example.bookshelfapp.model.BooksResponse
+import com.example.bookshelfapp.model.Genre
+import com.example.bookshelfapp.ui.CurrentScreen
 import com.example.bookshelfapp.ui.components.TopAppBar
-import com.example.bookshelfapp.ui.theme.BookshelfAppTheme
 
 
 @Composable
 fun BookshelfAppContent(
     modifier: Modifier = Modifier,
-    onBookClick: (Int) -> Unit = {},
-    onBackClick: () -> Unit = {},
+    navController: NavHostController,
+    onGenreClick: (Genre) -> Unit,
+    onBookClick: (Int) -> Unit,
+    onBackClick: () -> Unit,
+    selectedIndex: Int,
+    canNavigateBack: Boolean = true,
     bookshelfResponse: BooksResponse = BooksResponse()
 ) {
     Scaffold(
@@ -41,20 +48,51 @@ fun BookshelfAppContent(
                 modifier = Modifier
                     .statusBarsPadding()
                     .fillMaxWidth()
-                    .padding(dimensionResource(R.dimen.padding_medium)),
-                onBackClick = onBackClick
+                    .padding(
+                        vertical  = dimensionResource(R.dimen.padding_small),
+                        horizontal = dimensionResource(R.dimen.padding_small)
+                    ),
+                onBackClick = onBackClick,
+                canNavigateBack = canNavigateBack
             )
         },
         modifier = modifier
     ) { innerPadding ->
-        BookCoversGrid(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = dimensionResource(R.dimen.padding_small)),
-            books = bookshelfResponse.items,
-            selectBookIndex = onBookClick
-        )
+
+        NavHost(
+            navController = navController,
+            startDestination = CurrentScreen.Genre.name,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(route = CurrentScreen.Genre.name) {
+                GenreScreen(
+                    onClick = {
+                        onGenreClick(it)
+                        navController.navigate(CurrentScreen.Books.name)
+                    }
+                )
+            }
+
+            composable(route = CurrentScreen.Books.name) {
+                BookCoversGrid(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = dimensionResource(R.dimen.padding_small)),
+                    books = bookshelfResponse.items,
+                    selectBookIndex = {
+                        onBookClick(it)
+                        navController.navigate(CurrentScreen.Info.name)
+                    }
+                )
+            }
+
+            composable(route = CurrentScreen.Info.name) {
+                BookInfo(
+                    modifier = Modifier.statusBarsPadding(),
+                    volumeInfo = bookshelfResponse.items?.getOrNull(selectedIndex)?.volumeInfo,
+                )
+            }
+        }
     }
 }
 
@@ -92,13 +130,5 @@ fun BookCoversGrid(
                 )
             }
         }
-    }
-}
-
-@Preview (showBackground = true, showSystemUi = true)
-@Composable
-fun BookshelfAppContentPreview(){
-    BookshelfAppTheme {
-        BookshelfAppContent(modifier = Modifier.fillMaxSize())
     }
 }
