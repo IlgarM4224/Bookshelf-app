@@ -56,13 +56,13 @@ fun BookInfo (
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(mediumPadding)
+                .padding(horizontal = mediumPadding)
         ){
             BooksImage(
                 imageLink = volumeInfo?.imageLinks?.secureThumbnail,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(mediumPadding)
+                    .padding(horizontal = mediumPadding)
             )
 
             Spacer(modifier = Modifier.height(mediumPadding))
@@ -109,13 +109,13 @@ fun BookBadges(volumeInfo: VolumeInfo?) {
         volumeInfo?.pageCount?.let {
             AssistChip(
                 onClick = {},
-                label = { Text("$it pages") }
+                label = { Text("$it ${stringResource(R.string.pages)}") }
             )
         }
         volumeInfo?.language?.let {
             AssistChip(
                 onClick = {},
-                label = { Text("Language: ${it.uppercase()}") }
+                label = { Text("${stringResource(R.string.language)}: ${it.uppercase()}") }
             )
         }
         volumeInfo?.categories?.forEach { category ->
@@ -148,8 +148,8 @@ fun DescriptionCard(
             verticalArrangement = Arrangement.spacedBy(smallPadding)
         ) {
             if (volumeInfo?.publisher != null || volumeInfo?.publishedDate != null) {
-                InfoRow(label = "Publisher", value = volumeInfo.publisher ?: nullString)
-                InfoRow(label = "Published date", value = volumeInfo.publishedDate ?: nullString)
+                InfoRow(label = stringResource(R.string.publisher), value = volumeInfo.publisher ?: nullString)
+                InfoRow(label = stringResource(R.string.published_date), value = volumeInfo.publishedDate ?: nullString)
 
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = smallPadding/2),
@@ -158,7 +158,7 @@ fun DescriptionCard(
             }
 
             Text(
-                text = "Description",
+                text = stringResource(R.string.description),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary

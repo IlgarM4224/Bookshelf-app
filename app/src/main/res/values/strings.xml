@@ -5,4 +5,9 @@
     <string name="error">Error</string>
     <string name="if_null">No information</string>
     <string name="loading_top_bar">Please wait</string>
+    <string name="publisher">Publisher</string>
+    <string name="published_date">Published date</string>
+    <string name="pages">pages</string>
+    <string name="language">Language</string>
+    <string name="description">Description</string>
 </resources>

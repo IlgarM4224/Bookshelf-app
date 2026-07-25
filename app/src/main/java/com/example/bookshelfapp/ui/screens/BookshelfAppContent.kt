@@ -63,6 +63,7 @@ fun BookshelfAppContent(
                     ),
                 onBackClick = onBackPressed,
                 currentScreen = currentScreenForTopAppBar,
+                contentType = contentType,
                 selectedGenre = if (currentUiState is BookshelfUiState.Success ) currentUiState.selectedGenre else null
             )
         },

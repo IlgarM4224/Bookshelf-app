@@ -5,18 +5,18 @@ import com.example.bookshelfapp.R
 
 
 enum class Genre(val displayName: String, @DrawableRes val iconId: Int) {
-    Romance(displayName = "romance", iconId = R.drawable.romance ),
-    Fantasy(displayName = "fantasy", iconId = R.drawable.fantasy ),
-    ThrillerAndSuspense(displayName = "thriller and suspense", iconId = R.drawable.thrillerandsuspense),
-    Mystery(displayName = "mystery", iconId = R.drawable.mystery),
-    ScienceFiction(displayName = "science fiction", iconId = R.drawable.sciencefiction),
-    HistoricalFiction(displayName = "historical fiction", iconId = R.drawable.historicalfiction),
-    Horror(displayName = "horror", iconId = R.drawable.horror),
-    History(displayName = "history", iconId = R.drawable.history),
-    Dystopian(displayName = "dystopian", iconId = R.drawable.dystopian),
-    ActionAndAdventure(displayName = "action and adventure", iconId = R.drawable.actionandadventure),
-    ContemporaryFiction(displayName = "contemporary fiction", iconId = R.drawable.contemporaryfiction),
-    ShortStory(displayName = "short story", iconId = R.drawable.shortstory)
+    Romance(displayName = "Romance", iconId = R.drawable.romance ),
+    Fantasy(displayName = "Fantasy", iconId = R.drawable.fantasy ),
+    ThrillerAndSuspense(displayName = "Thriller and suspense", iconId = R.drawable.thrillerandsuspense),
+    Mystery(displayName = "Mystery", iconId = R.drawable.mystery),
+    ScienceFiction(displayName = "Science fiction", iconId = R.drawable.sciencefiction),
+    HistoricalFiction(displayName = "Historical fiction", iconId = R.drawable.historicalfiction),
+    Horror(displayName = "Horror", iconId = R.drawable.horror),
+    History(displayName = "History", iconId = R.drawable.history),
+    Dystopian(displayName = "Dystopian", iconId = R.drawable.dystopian),
+    ActionAndAdventure(displayName = "Action and adventure", iconId = R.drawable.actionandadventure),
+    ContemporaryFiction(displayName = "Contemporary fiction", iconId = R.drawable.contemporaryfiction),
+    ShortStory(displayName = "Short story", iconId = R.drawable.shortstory)
 }
 
 object GenreProvider {
