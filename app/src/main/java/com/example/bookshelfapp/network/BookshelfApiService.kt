@@ -9,6 +9,7 @@ interface BookshelfApiService {
     suspend fun getBooksByGenre(
         @Query("q") query: String,
         @Query("key") apiKey: String,
+        @Query("startIndex") startIndex: Int = 0,
         @Query("maxResults") maxResults: Int = 20
     ): BooksResponse
 }

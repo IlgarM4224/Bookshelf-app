@@ -35,6 +35,7 @@ fun BookShelfApp(windowSize: WindowWidthSizeClass) {
             navController.navigateUp()
         },
         contentType = contentType,
+        onLoadMore = viewModel::loadMore,
         modifier = Modifier.fillMaxSize()
     )
 }

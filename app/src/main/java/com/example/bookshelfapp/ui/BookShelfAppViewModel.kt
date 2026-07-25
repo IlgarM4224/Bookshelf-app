@@ -27,7 +27,9 @@ sealed interface BookshelfUiState {
         val selectedGenre: Genre? = null,
         val currentScreen: CurrentScreen = CurrentScreen.Genre,
         val selectedBookIndex: Int? = null,
-        val canNavigateBack: Boolean = false
+        val canNavigateBack: Boolean = false,
+        val isLoadingMore: Boolean = false,
+        val endReached: Boolean = false
         ) : BookshelfUiState
     object Error : BookshelfUiState
     object Loading : BookshelfUiState
@@ -35,7 +37,6 @@ sealed interface BookshelfUiState {
 
 class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepository): ViewModel(){
     private val _uiState = MutableStateFlow<BookshelfUiState>(BookshelfUiState.Success())
-
     val uiState: StateFlow<BookshelfUiState> = _uiState.asStateFlow()
 
     private var currentGenre: Genre? = null
@@ -44,7 +45,7 @@ class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepositor
         viewModelScope.launch {
             _uiState.value = BookshelfUiState.Loading
 
-            bookshelfRepository.getBooksByGenreFlow(selectedGenre)
+            bookshelfRepository.getBooksByGenreFlow(selectedGenre, startIndex = 0)
                 .catch { e ->
                     Log.e("BookshelfVM", "Critical error while loading data", e)
                     _uiState.value = BookshelfUiState.Error
@@ -55,15 +56,46 @@ class BookShelfAppViewModel (private val bookshelfRepository: BookshelfRepositor
                         genres = GenreProvider.getGenres(),
                         selectedGenre = selectedGenre,
                         currentScreen = CurrentScreen.Books,
-                        canNavigateBack = true
+                        canNavigateBack = true,
+                        endReached = response.items.isNullOrEmpty()
                     )
                 }
         }
     }
 
-    fun retry(){
-        currentGenre?.let { getBookshelf(it) }
+    fun loadMore() {
+        val current = _uiState.value
+
+        if (current !is BookshelfUiState.Success) return
+        if (current.isLoadingMore || current.endReached) return
+
+        val genre = current.selectedGenre ?: return
+        val loadedCount = current.booksResponse?.items?.size ?: 0
+
+        viewModelScope.launch {
+            _uiState.update { (it as? BookshelfUiState.Success)?.copy(isLoadingMore = true) ?: it }
+
+            bookshelfRepository.getBooksByGenreFlow(genre, startIndex = loadedCount)
+                .catch { e ->
+                    Log.e("BookshelfVM", "Error loading more books", e)
+                    _uiState.update { (it as? BookshelfUiState.Success)?.copy(isLoadingMore = false) ?: it }
+                }
+                .collect { response ->
+                    _uiState.update { state ->
+                        if (state is BookshelfUiState.Success) {
+                            val combined = (state.booksResponse?.items ?: emptyList()) + (response.items ?: emptyList())
+                            state.copy(
+                                booksResponse = (state.booksResponse ?: response).copy(items = combined),
+                                isLoadingMore = false,
+                                endReached = response.items.isNullOrEmpty()
+                            )
+                        } else state
+                    }
+                }
+        }
     }
+
+    fun retry(){ currentGenre?.let { getBookshelf(it) } }
 
     fun setGenre (selected: Genre) {
         currentGenre = selected

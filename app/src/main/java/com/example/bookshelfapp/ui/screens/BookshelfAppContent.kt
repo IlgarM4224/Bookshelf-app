@@ -3,6 +3,7 @@ package com.example.bookshelfapp.ui.screens
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -11,9 +12,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -42,6 +48,7 @@ fun BookshelfAppContent(
     selectGenre: (Genre) -> Unit,
     selectBookIndex: (Int) -> Unit,
     onBackPressed: (CurrentScreen) -> Unit,
+    onLoadMore: () -> Unit,
     contentType: ContentType = ContentType.OnlyInfo,
     currentUiState: BookshelfUiState
 ) {
@@ -111,7 +118,10 @@ fun BookshelfAppContent(
                             selectBookIndex = {
                                 selectBookIndex(it)
                                 navController.navigate(CurrentScreen.Info.name)
-                            }
+                            },
+                            endReached = currentUiState.endReached,
+                            isLoadingMore = currentUiState.isLoadingMore,
+                            onLoadMore = onLoadMore
                         )
                     }
 
@@ -149,7 +159,10 @@ fun BookshelfAppContent(
                                 books = currentUiState.booksResponse?.items,
                                 selectBookIndex = {
                                     selectBookIndex(it)
-                                }
+                                },
+                                endReached = currentUiState.endReached,
+                                isLoadingMore = currentUiState.isLoadingMore,
+                                onLoadMore = onLoadMore
                             )
                             if (currentUiState.selectedBookIndex != null) {
                                 BookInfo(
@@ -171,7 +184,10 @@ fun BookshelfAppContent(
 fun BookCoversGrid(
     modifier: Modifier = Modifier,
     selectBookIndex: (Int) -> Unit = {},
-    books: List<BookItem>?
+    books: List<BookItem>?,
+    onLoadMore: () -> Unit = {},
+    isLoadingMore: Boolean = false,
+    endReached: Boolean = false
 ){
     val spacing = dimensionResource(R.dimen.grid_padding)
 
@@ -199,6 +215,26 @@ fun BookCoversGrid(
                         .clickable(onClick = { selectBookIndex(it) })
 
                 )
+            }
+
+            // more button
+            if (!endReached) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(spacing),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isLoadingMore) {
+                            CircularProgressIndicator()
+                        } else {
+                            Button(onClick = onLoadMore) {
+                                Text(stringResource(R.string.more_button))
+                            }
+                        }
+                    }
+                }
             }
         }
     }

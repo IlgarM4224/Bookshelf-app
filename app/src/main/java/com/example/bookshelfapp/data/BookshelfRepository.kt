@@ -15,21 +15,22 @@ import kotlin.time.Duration.Companion.milliseconds
 
 const val apiKey = BuildConfig.BOOKS_API_KEY
 interface BookshelfRepository {
-    suspend fun getBooksByGenre(genre: Genre): BooksResponse
-    fun getBooksByGenreFlow(genre: Genre, maxRetries: Int = 5): Flow<BooksResponse>
+    suspend fun getBooksByGenre(genre: Genre, startIndex: Int = 0): BooksResponse
+    fun getBooksByGenreFlow(genre: Genre, startIndex: Int = 0, maxRetries: Int = 5): Flow<BooksResponse>
 }
 
 class NetworkBookshelfRepository (private val retrofitService: BookshelfApiService): BookshelfRepository {
-    override suspend fun getBooksByGenre(genre: Genre): BooksResponse =
+    override suspend fun getBooksByGenre(genre: Genre, startIndex: Int): BooksResponse =
         retrofitService.getBooksByGenre(
             query = "subject:${genre.displayName}",
             apiKey = apiKey,
+            startIndex = startIndex,
             maxResults = 20
         )
 
-    override fun getBooksByGenreFlow(genre: Genre, maxRetries: Int): Flow<BooksResponse> {
+    override fun getBooksByGenreFlow(genre: Genre, startIndex: Int, maxRetries: Int): Flow<BooksResponse> {
         return flow {
-            emit(getBooksByGenre(genre))
+            emit(getBooksByGenre(genre, startIndex))
         }.retryWhen { cause, attempt ->
             val isNetworkError = cause is IOException
             val isServerError503 = cause is HttpException && cause.code() == 503
