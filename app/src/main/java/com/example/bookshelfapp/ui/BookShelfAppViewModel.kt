@@ -26,7 +26,7 @@ sealed interface BookshelfUiState {
         val genres: List<Genre> = emptyList(),
         val selectedGenre: Genre? = null,
         val currentScreen: CurrentScreen = CurrentScreen.Genre,
-        val selectedBookIndex: Int = 0,
+        val selectedBookIndex: Int? = null,
         val canNavigateBack: Boolean = false
         ) : BookshelfUiState
     object Error : BookshelfUiState

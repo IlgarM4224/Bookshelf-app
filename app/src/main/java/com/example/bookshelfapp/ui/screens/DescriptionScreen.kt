@@ -7,11 +7,11 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -62,7 +62,7 @@ fun BookInfo (
                 imageLink = volumeInfo?.imageLinks?.secureThumbnail,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = smallPadding)
+                    .padding(mediumPadding)
             )
 
             Spacer(modifier = Modifier.height(mediumPadding))
@@ -211,10 +211,7 @@ fun BooksImage(
             fallback = painterResource(R.drawable.not_found),
             placeholder = painterResource(R.drawable.loading),
             modifier = Modifier
-                .size(
-                    width = dimensionResource(R.dimen.description_image_width),
-                    height = dimensionResource(R.dimen.description_image_height)
-                )
+                .aspectRatio(2f / 3f)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         )

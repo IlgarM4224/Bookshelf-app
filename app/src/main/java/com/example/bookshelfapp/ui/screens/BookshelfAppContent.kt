@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +30,7 @@ import com.example.bookshelfapp.R
 import com.example.bookshelfapp.model.BookItem
 import com.example.bookshelfapp.model.Genre
 import com.example.bookshelfapp.ui.BookshelfUiState
+import com.example.bookshelfapp.ui.ContentType
 import com.example.bookshelfapp.ui.CurrentScreen
 import com.example.bookshelfapp.ui.components.TopAppBar
 
@@ -40,6 +42,7 @@ fun BookshelfAppContent(
     selectGenre: (Genre) -> Unit,
     selectBookIndex: (Int) -> Unit,
     onBackPressed: (CurrentScreen) -> Unit,
+    contentType: ContentType = ContentType.OnlyInfo,
     currentUiState: BookshelfUiState
 ) {
     val currentScreenForTopAppBar = when (currentUiState) {
@@ -130,10 +133,33 @@ fun BookshelfAppContent(
                     BackHandler {
                         onBackPressed(CurrentScreen.Info)
                     }
-                    BookInfo(
-                        modifier = Modifier.statusBarsPadding(),
-                        volumeInfo = currentUiState.booksResponse?.items?.getOrNull(currentUiState.selectedBookIndex)?.volumeInfo ,
-                    )
+
+                    if (contentType == ContentType.OnlyInfo) {
+                        BookInfo(
+                            volumeInfo = currentUiState.booksResponse?.items?.getOrNull(currentUiState.selectedBookIndex ?: 0)?.volumeInfo ,
+                        )
+                    } else {
+                        Row {
+                            BookCoversGrid(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                                    .weight(3f),
+                                books = currentUiState.booksResponse?.items,
+                                selectBookIndex = {
+                                    selectBookIndex(it)
+                                }
+                            )
+                            if (currentUiState.selectedBookIndex != null) {
+                                BookInfo(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .weight(2f),
+                                    volumeInfo = currentUiState.booksResponse?.items?.getOrNull(currentUiState.selectedBookIndex)?.volumeInfo ,
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
