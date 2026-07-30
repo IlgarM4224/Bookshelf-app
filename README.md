@@ -20,9 +20,9 @@
 
 ## Visuals
 
-| Full functionality                                                 |                              Error page                              |                                                      More button |
-|:-------------------------------------------------------------------|:--------------------------------------------------------------------:|-----------------------------------------------------------------:|
-| <img src="media/Compact.gif" width="280" alt="Compact screen" />   | <img src="media/ErrorAndRetry.gif" width="280" alt="Error screen" /> | <img src="media/MoreButton.gif" width="280" alt="More button" /> |
+| Full functionality                                               |                              Error page                              |                                                      More button |
+|:-----------------------------------------------------------------|:--------------------------------------------------------------------:|-----------------------------------------------------------------:|
+| <img src="media/Compact.gif" width="270" alt="Compact screen" /> | <img src="media/ErrorAndRetry.gif" width="270" alt="Error screen" /> | <img src="media/MoreButton.gif" width="270" alt="More button" /> |
 
 ### On the tablet
 <img src="media/Large.gif" height="555" alt="Grid screen" />
