@@ -7,6 +7,9 @@
 
 **Bookshelf** is an adaptive Android application built to browse and search books using the **Google Books API**. It enables users to explore different literary genres, load more results on demand, and view comprehensive details for any selected title across multiple device screen sizes.
 
+**Source code:**
+[Browse the app package on GitHub ](https://github.com/IlgarM4224/Bookshelf-app/tree/main/app/src/main/java/com/example/bookshelfapp)
+
 ## Features
 
 * **Genre Catalog**: Explore and select from popular book genres.
